@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { TextField, Button, Typography, Paper } from "@material-ui/core";
 import useStyles from "./styles";
+import { useSelector } from "react-redux";
 import FileBase from "react-file-base64";
-import { createPost } from "../../actions/posts";
+import { createPost, updatePost } from "../../actions/posts";
 
-const Form = () => {
+const Form = ({ currentId, setCurrentId }) => {
 	const [postData, setPostData] = useState({
 		creator: "",
 		title: "",
@@ -13,15 +14,36 @@ const Form = () => {
 		tags: "",
 		selectedFile: "",
 	});
+	const posts = useSelector((state) =>
+		currentId ? state.posts.find((p) => p._id === currentId) : null
+	);
+	const classes = useStyles();
 	const dispatch = useDispatch();
+
+	useEffect(() => {
+		if (posts) setPostData(posts);
+	}, [posts]);
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
-		dispatch(createPost(postData));
-	};
-	const clear = () => {};
 
-	const classes = useStyles();
+		if (currentId) {
+			dispatch(updatePost(currentId, postData));
+		} else {
+			dispatch(createPost(postData));
+		}
+		clear();
+	};
+	const clear = () => {
+		setCurrentId(null);
+		setPostData({
+			creator: "",
+			title: "",
+			message: "",
+			tags: "",
+			selectedFile: "",
+		});
+	};
 
 	return (
 		<Paper className={classes.paper}>
@@ -31,11 +53,15 @@ const Form = () => {
 				className={`${classes.root} ${classes.form}`}
 				onSubmit={handleSubmit}
 			>
-				<Typography variant='h6'>Creating a Memory</Typography>
+				<Typography variant='h5' fontWeight='700'>
+					{currentId ? "Editing" : "Creating"} a Memory
+				</Typography>
+
 				<TextField
 					name='creator'
 					variant='outlined'
 					label='Creator'
+					style={{ fontWeight: "bold" }}
 					fullWidth
 					value={postData.creator}
 					onChange={(e) =>
@@ -66,7 +92,16 @@ const Form = () => {
 					label='Tags'
 					fullWidth
 					value={postData.tags}
-					onChange={(e) => setPostData({ ...postData, tags: e.target.value })}
+					onChange={(e) =>
+						setPostData({
+							...postData,
+							tags: e.target.value.split(","),
+							// .filter(
+							// 	(tag) => tag !== null || tag !== undefined || tag !== ""
+							// )
+							// .forEach((tag) => tag.trim()),
+						})
+					}
 				/>
 				<div className={classes.fileInput}>
 					<FileBase
@@ -89,7 +124,7 @@ const Form = () => {
 				</Button>
 				<Button
 					variant='contained'
-					color='secondary'
+					style={{ backgroundColor: "#800000", color: "white" }}
 					size='small'
 					onClick={clear}
 					fullWidth

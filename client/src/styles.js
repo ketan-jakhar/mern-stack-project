@@ -8,9 +8,14 @@ export default makeStyles((theme) => ({
 		flexDirection: "row",
 		justifyContent: "center",
 		alignItems: "center",
+		backgroundImage:
+			"linear-gradient(to bottom right, rgba(255,255,255,0.2), rgba(255,255,255,0))",
+		backdropFilter: "blur(5px)",
+		backgroundColor: "rgba(255,255,255,0)",
 	},
 	heading: {
-		color: "rgba(0,183,255, 1)",
+		color: "#000",
+		fontWeight: "bold",
 	},
 	image: {
 		marginLeft: "15px",
