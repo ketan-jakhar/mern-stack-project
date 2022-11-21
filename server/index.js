@@ -11,6 +11,10 @@ app.use(express.json({ limit: "30mb", extended: true }));
 
 app.use(express.urlencoded({ limit: "30mb", extended: true }));
 
+app.get("/", (req, res) => {
+	res.redirect("/posts");
+});
+
 const CONNECTION_URL = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}/?retryWrites=true&w=majority`;
 const PORT = process.env.PORT || 5000;
 
